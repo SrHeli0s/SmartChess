@@ -18,6 +18,8 @@
 *.map
 *.srec
 
+*.atsuo
+
 #vscode
 .vscode/
 !.vscode/settings.json
