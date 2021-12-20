@@ -2,25 +2,29 @@
  *	PB1-PB5, PC0-PC2 Output to the reed net
  *  PB0, PD7-PD5, PB7-PB6, PD4-PD3 Input from the reed net
  */
+#ifndef F_CPU
+	#define F_CPU 8000000UL
+#endif
+#define BAUDRATE 9600
+#define UBRR (F_CPU/(BAUDRATE<<4))-1
 
 #include <xc.h>
 #include <avr/interrupt.h>
 #include <avr/io.h>
+#include <util/delay.h>
 #include "chess.h"
 
-#define F_CPU 8000000UL
-#define USART_BAUDRATE 9600
-#define BAUD_PRESCALE (((F_CPU / (USART_BAUDRATE * 16UL))) - 1)
+
 
 
 //Pre: The USART is in a unknown/bad state
 //Post: The USART is initialized and ready to use
-void USART_init() {
-	DDRD |= (1 << PD0) | (1 << PD1);
-	UBRR0H = (unsigned char)(USART_BAUDRATE>>8);	//Set baud rate
-	UBRR0L = (unsigned char)USART_BAUDRATE;
-	UCSR0B = (1<<RXEN0)|(1<<TXEN0);	//Enable receiver and transmitter
-	UCSR0C = (1<<UCSZ00) | (1 << UCSZ01);	//Set frame format: 8 data, 1 stop bit
+void USART_init(unsigned int baud) {
+	DDRD |= (1<<PD1);
+	UBRR0H = 0;
+	UBRR0L = 51;
+	UCSR0B = (1<<RXEN0) | (1<<TXEN0);	//Enable receiver and transmitter
+	UCSR0C = (1<<UCSZ00) | (1<<UCSZ01);	//Set frame format: 8 data, 1 stop bit
 }
 
 //Pre: "data" contains a character to send using USART
@@ -52,7 +56,7 @@ void USART_transmit_str(const char* str)
 }
 
 unsigned char USART_block_recieve() {
-		while ((UCSR0A & (1 << RXC0)) == 0);	// Wait till data is received
+		while ((UCSR0A & (1 << RXC0)) == 0) {};	// Wait till data is received
 		return(UDR0);		// Return the byte
 }
 
@@ -125,7 +129,6 @@ void readBoard(unsigned char* output) {
 }
 
 
-unsigned char test = 'a';
 
 int main(void)
 {
@@ -134,12 +137,27 @@ int main(void)
 	// PD0-PD1 output to serial
 	DDRB |= (1<<PB1) | (1<<PB2) | (1<<PB3) | (1<<PB4) | (1<<PB5);
 	DDRC |= (1<<PC0) | (1<<PC1) | (1<<PC2);
-	USART_init();
+	USART_init(UBRR);
 	
-	USART_transmit_str("\n\t Echo Test ");
+	char r = '#';
 	while(1)
 	{
-		test=USART_block_recieve();
-		USART_block_transmit(test);
+		r = USART_block_recieve();
+		switch (r) {
+			case 'c':
+				computer_game_routine();
+			case 'r':
+				960_game_routine();
+			default: 
+				normal_game_routine();
+			
+		}
+		PORTC ^= (1 << PC1);
+		
+		USART_transmit_str("Hello PC! the char i recieved was");
+		USART_block_transmit(r);
+		USART_block_transmit('\n');
+		
+		_delay_ms(1000);
 	}
 }
