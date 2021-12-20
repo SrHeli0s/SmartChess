@@ -3,8 +3,8 @@
  *  PB0, PD7-PD5, PB7-PB6, PD4-PD3 Input from the reed net
  * IDEAS:
  *	Light sensor that lights up the board when there is not enough light to see
- *	Time control via timers
- *	Display for the time control
+ *	Time control via timers + display?
+ *	Display of the battery of the board
  */
 #ifndef F_CPU
 	#define F_CPU 8000000UL
