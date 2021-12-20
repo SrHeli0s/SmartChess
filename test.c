@@ -36,6 +36,7 @@ void print_board(unsigned char* board) {
     }
 }
 
+
 //Tries to execute the following moves: move1 as middle possition and move2 as final position
 int tryMove(char* move1, char* move2) {
     //Calculate offset of moves
@@ -81,12 +82,14 @@ int main() {
         printf("\n\n----Trying move %u \nActual board:\n",j);
         print_board(actual_position);
         if(tryMove(game[j][0],game[j][1]) == -1) {
-            printf("EXPLODED");
+            printf("=====EXPLODED on move %u=====",j);
             return -1;
         }
     }
     printf("\n\nEND OF GAME:\n");
     print_board(actual_position);
+
+    
     
     return 0;
 }
