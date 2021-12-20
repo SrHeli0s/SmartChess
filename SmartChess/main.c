@@ -1,6 +1,10 @@
 /* Smart Chess 1.0
  *	PB1-PB5, PC0-PC2 Output to the reed net
  *  PB0, PD7-PD5, PB7-PB6, PD4-PD3 Input from the reed net
+ * IDEAS:
+ *	Light sensor that lights up the board when there is not enough light to see
+ *	Time control via timers
+ *	Display for the time control
  */
 #ifndef F_CPU
 	#define F_CPU 8000000UL
