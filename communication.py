@@ -8,7 +8,9 @@ import stockfish
 #Serial communication codes:
 # e =   Error on last message, resend it
 # s =   Start game
-# <move> =  Sequence of 4 characters describing origin position and final position 
+# p =   Going to send the position of the pieces
+# <piece> = [a-h][1-8] =    Position of a piece. All pieces are sent in the following order: Pawn -> Bishop -> Knight -> Rook -> King -> Queen -> Same for the black pieces
+# <move> =  [a-h][1-8][a-h][1-8]\n =  Sequence of 4 characters describing origin position and final position 
 #
 # * If the character is in lowercase: board to computer
 # * If the character is in uppercase: computer to board
@@ -31,9 +33,12 @@ stockfish = Stockfish("./stockfish_14.1_avx2/stockfish_14.1_win_x64_avx2",parame
 #Open serial port
 try:
     ser = serial.Serial('COM3',baudrate=9600, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE)  # open serial port
+    ser.reset_input_buffer()
+    ser.reset_output_buffer()
 except:
     print(bcolors.WARNING + "\n[WARN] SERIAL NOT FOUND, RUNNING IN DEVELOPMENT MODE (ALL CALLS TO SERIAL WILL EXPLODE)" + bcolors.ENDC)
 #Configuration variables
+verbose = False
 output_type = 0 #0=none, 1=keyboard simulation, 2=file
 f = None
 
@@ -66,10 +71,15 @@ def report_error(desc = ""):
 def read_noblock_serial():
     if ser.in_waiting > 0:
         serialString = ser.readline()
+        ser.reset_input_buffer()
         try:
-            return serialString.decode("Ascii")
+            serialString = serialString.decode("Ascii")
+            if verbose: print(bcolors.FAIL + "[VERBOSE] Executed noblock read with output " + serialString + bcolors.ENDC)
+            return serialString
         except:
+            if verbose: print(bcolors.FAIL + "[VERBOSE] Executed noblock read with bad output " + bcolors.ENDC)
             return ""
+    if verbose: print(bcolors.FAIL + "[VERBOSE] Executed noblock read with no output " + bcolors.ENDC)
     return ""
 
 #Pre: serial communication is in a unkown state
@@ -77,19 +87,27 @@ def read_noblock_serial():
 def read_block_serial():
     while ser.in_waiting == 0: pass
     serialString = ser.readline()
+    ser.reset_input_buffer()
     try:
-        return serialString.decode("Ascii")
+        serialString = serialString.decode("Ascii")
+        if verbose: print(bcolors.FAIL + "[VERBOSE] Executed block read with output " + serialString + bcolors.ENDC)
+        return serialString
     except:
+        if verbose: print(bcolors.FAIL + "[VERBOSE] Executed block read with bad output " + bcolors.ENDC)
         return ""
 
 #Pre: serial communication is in a unkown state
 #Post: waits until there is a message and returns it
 def read_move_block_serial():
-    while ser.in_waiting < 4: pass
-    serialString = ser.readline()
+    serialString = ser.read_until('\n')
+    ser.reset_input_buffer()
     try:
-        return serialString.decode("Ascii")
+        serialString = serialString.decode("Ascii")
+        if verbose: print(bcolors.FAIL + "[VERBOSE] Executed block read move with output " + serialString + bcolors.ENDC)
+        return serialString
     except:
+        if verbose: print(bcolors.FAIL + "[VERBOSE] Executed block read move with bad output " + bcolors.ENDC)
+        ser.reset_input_buffer()
         return ""
 
 #Pre: The game is in no gamemode loop
@@ -97,7 +115,7 @@ def read_move_block_serial():
 def loop_computer():
     validResponse = False
     while(not validResponse):
-        print("\n-- Set ELO rating (0 to 20): --")
+        print("\n-- Set skill level (0 to 20): --")
         print("q = QUIT")
         inp = input("")
         if inp == "q":
@@ -116,6 +134,7 @@ def loop_computer():
         response = read_block_serial()
         if response == 's':
             validResponse = True
+        #TODO: Error handling on all the communications (if recieved 'e'...)
         else:
             report_error("Start computer gamemode")
     
@@ -164,6 +183,8 @@ def loop_normal():
         response = read_block_serial()
         if response == 's':
             validResponse = True
+        elif response == 'e':
+            pass
         else:
             report_error("Start normal gamemode")
 
@@ -220,6 +241,19 @@ def loop_960():
 
 #==================== MAIN ====================#
 while (1):
+    validResponse = False
+    while(not validResponse):
+        print("\n-- Verbose? (Y-n) --")
+        print("q = QUIT")
+        inp = input("")
+        if inp.lower() == "y":
+            validResponse = True
+            verbose = True
+        elif inp.lower() == "n":
+            validResponse = True
+            verbose = False
+        elif inp == "q":
+            exit()
     validResponse = False
     while(not validResponse):
         print("\n-- Select game mode: --")
