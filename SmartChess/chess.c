@@ -318,6 +318,7 @@ void getMoves(struct piece p, unsigned char* output) {
 //Pre: "new" is an array of size 144 representing the lastest detection of the board. "middle" is an array of size 144 representing the middle detection of the board
 //Post: Checks the move made and executes it if its legal, returning 0. Returns -1 if not legal.
 int makeMove(unsigned char* new, unsigned char* middle) {
+	//TODO: Handle promotion of pawns to queen
 	unsigned char nMoves = 0;
 	unsigned char positions[144] = {0}; //144 to prevent overflow
 	//Get piece(s) that moved

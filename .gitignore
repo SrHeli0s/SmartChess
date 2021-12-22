@@ -33,3 +33,5 @@
 
 # Built Visual Studio Code Extensions
 *.vsix
+SmartChess/Debug/memoryfile.xml
+.vs/SmartChess/v14/.atsuo
