@@ -147,21 +147,16 @@ int main(void)
 	while(1)
 	{
 		r = USART_block_recieve();
-		switch (r) {
-			case 'c':
-				computer_game_routine();
-			case 'r':
-				960_game_routine();
-			default: 
-				normal_game_routine();
-			
+		if (r == 'S') {
+			USART_block_transmit('s');
 		}
-		PORTC ^= (1 << PC1);
+		else {
+			USART_block_transmit('e');
+		}
 		
-		USART_transmit_str("Hello PC! the char i recieved was");
-		USART_block_transmit(r);
-		USART_block_transmit('\n');
 		
-		_delay_ms(1000);
+		for (int delay=0;delay<0xFFFF;delay++);
+		USART_transmit_str("e2e4\n");
+		while(1) {}
 	}
 }
