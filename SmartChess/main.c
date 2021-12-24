@@ -1,5 +1,5 @@
 /* Smart Chess 1.0
- *	PB1-PB5, PC0-PC2 Output to the reed net
+ *	PB1-PB3 Output to the reed net
  *  PB0, PD7-PD5, PB7-PB6, PD4-PD3 Input from the reed net
  * IDEAS:
  *	Light sensor that lights up the board when there is not enough light to see
@@ -82,81 +82,38 @@ void readRow(unsigned char* output) {
 //Post: The board is read and stored in "output".
 void readBoard(unsigned char* output) {
 	int i=26; //for offset
-	
-	//Read 1º row
-	PORTB |= (1<<PB1);
-	readRow(&output[i]);
-	PORTB &= ~(1<<PB1);
-	i+=MOVE_N;
-	
-	//Read 2º row
-	PORTB |= (1<<PB2);
-	readRow(&output[i]);
-	PORTB &= ~(1<<PB2);
-	i+=MOVE_N;
-	
-	//Read 3º row
-	PORTB |= (1<<PB3);
-	readRow(&output[i]);
-	PORTB &= ~(1<<PB3);
-	i+=MOVE_N;
-	
-	//Read 4º row
-	PORTB |= (1<<PB4);
-	readRow(&output[i]);
-	PORTB &= ~(1<<PB4);
-	i+=MOVE_N;
-	
-	//Read 5º row
-	PORTB |= (1<<PB5);
-	readRow(&output[i]);
-	PORTB &= ~(1<<PB5);
-	i+=MOVE_N;
-	
-	//Read 6º row
-	PORTC |= (1<<PC0);
-	readRow(&output[i]);
-	PORTC &= ~(1<<PC0);
-	i+=MOVE_N;
-	
-	//Read 7º row
-	PORTC |= (1<<PC1);
-	readRow(&output[i]);
-	PORTC &= ~(1<<PC1);
-	i+=MOVE_N;
-	
-	//Read 8º row
-	PORTC |= (1<<PC2);
-	readRow(&output[i]);
-	PORTC &= ~(1<<PC2);
-	
+	for (int j = 0; j<8; j++) {
+		PORTB |= (j<<PB1);
+		readRow(&output[i]);
+		PORTB &= ~(j<<PB1);
+		i+=MOVE_N;	
+	}
 }
-
 
 
 int main(void)
 {
-	// PB1-PB5, PC0-PC2 Output to the reed net
+	// PB1-PB3 Output to the reed net
 	// PB0, PD7-PD5, PB7-PB6, PD4-PD3 Input from the reed net
 	// PD0-PD1 output to serial
-	DDRB |= (1<<PB1) | (1<<PB2) | (1<<PB3) | (1<<PB4) | (1<<PB5);
-	DDRC |= (1<<PC0) | (1<<PC1) | (1<<PC2);
+	DDRB |= (1<<PB1) | (1<<PB2) | (1<<PB3);
 	USART_init(UBRR);
 	
 	char r = '#';
 	while(1)
 	{
-		r = USART_block_recieve();
-		if (r == 'S') {
-			USART_block_transmit('s');
+		int validResponse = 0;
+		while (!validResponse) {
+			r = USART_block_recieve();
+			if (r == 'S') {
+				USART_block_transmit('s');
+				validResponse = 1;	
+			}
+			else {
+				USART_block_transmit('e');
+			}
 		}
-		else {
-			USART_block_transmit('e');
-		}
+	
 		
-		
-		for (int delay=0;delay<0xFFFF;delay++);
-		USART_transmit_str("e2e4\n");
-		while(1) {}
 	}
 }
