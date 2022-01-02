@@ -1,5 +1,5 @@
-#include "Smartchess/chess.c"
-#include <assert.h>
+#include "Smartchess/piece.c"
+#include "Smartchess/board.c"
 #include <stdio.h>
 
 /*

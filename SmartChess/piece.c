@@ -1,5 +1,5 @@
-#include "chess.h"
-#include "string.h" //To use memset()
+#include "piece.h"
+#include "board.h"
 #include <stdlib.h> //To use abs()
 
 struct piece gamePieces[32] = {	{P_PAWN,COLOR_W,38,0,1},
@@ -38,61 +38,6 @@ struct piece gamePieces[32] = {	{P_PAWN,COLOR_W,38,0,1},
 
 struct piece *lastPiece = NULL;
 
-unsigned char actual_position[144] = {0}; //Representation of the actual board
-unsigned char detected_position[144] = {0}; //Buffer representation of the board with a new move
-unsigned char middle_position[144] = {0}; //Representation of the "middle detected" board
-
-unsigned char white_attacks[144] = {0}; //Possible attacks white can make
-unsigned char black_attacks[144] = {0}; //Possible attacks black can make
-
-unsigned char turn = COLOR_W;
-
-//Pre:
-//Post: Initializes variables to start a new game
-void prepareGame() {
-	memset(actual_position, 0, sizeof actual_position); //Set to all 0
-	memset(detected_position, 0, sizeof detected_position); //Set to all 0
-	for (int i=26;i<34;i++){
-		actual_position[i] = 1;
-		detected_position[i] = 1;
-	}
-	for (int i=38;i<46;i++){
-		actual_position[i] = 1;
-		detected_position[i] = 1;
-	}
-	for (int i=98;i<106;i++){
-		actual_position[i] = 1;
-		detected_position[i] = 1;
-	}
-	for (int i=110;i<118;i++){
-		actual_position[i] = 1;
-		detected_position[i] = 1;
-	}
-	//TODO: Reset pieces
-	
-	turn = COLOR_W;
-}
-
-//Pre: The attack maps are in an unknown state. "c" is a color (COLOR_W or COLOR_B)
-//Post: The attack map of the color c is updated.
-void updateAttackMap(int c) {
-	if (c == COLOR_W) {
-		memset(white_attacks, 0, sizeof white_attacks); //Set to all 0
-		for (int i=0; i<16; i++) {
-			if (gamePieces[i].alive == 1) {
-				getAttacks(gamePieces[i],white_attacks);
-			}
-		}
-	}
-	else {
-		memset(black_attacks, 0, sizeof black_attacks); //Set to all 0
-		for (int i=16; i<32; i++) { // Offset i to use black pieces instead of white ones
-			if (gamePieces[i].alive == 1) {
-				getAttacks(gamePieces[i],black_attacks);
-			}
-		}
-	}
-}
 
 //Pre: "p" is a piece in the game, "output" is an array of size 144 empty or in a known state 
 //Post: In output is stored the map of all the possible attacks of "p"
