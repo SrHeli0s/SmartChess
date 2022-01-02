@@ -48,21 +48,32 @@ f = None
 #Post: The move is output to the mode configured
 def output_move(move):
     if output_type == 0:
-        stockfish.make_moves_from_current_position(move)
-        print(stockfish.get_board_visual()+"\n\n")
+        try:
+            stockfish.make_moves_from_current_position(move)
+            print(stockfish.get_board_visual()+"\n\n")
+        except:
+            report_serial_error("Make move")
     elif output_type == 1:
-        for char in move:
-            keyboard.press(char)
-            keyboard.release(char)
-            time.sleep(0.13)
+        try:
+            stockfish.make_moves_from_current_position(move)
+            for char in move:
+                keyboard.press(char)
+                keyboard.release(char)
+                time.sleep(0.13)
+        except:
+            report_serial_error("Make move")
     elif output_type == 2:
-        f.write(move+"\n")
+        try:
+            stockfish.make_moves_from_current_position(move)
+            f.write(move+"\n")
+        except:
+            report_serial_error("Make move")
 
 
 #Pre: desc contains a string describing the error
 #Post: A warning is printed to the screen and the error message is sent to the board
-def report_error(desc = ""):
-    print(bcolors.WARNING + "[WARN] ERROR IN SERIAL REPORTED: "+desc + bcolors.ENDC)
+def report_serial_error(desc = ""):
+    print(bcolors.WARNING + "[WARN] ERROR IN SERIAL REPORTED: " + desc + bcolors.ENDC)
     ser.write(b'E')
 
 
@@ -134,9 +145,10 @@ def loop_computer():
         response = read_block_serial()
         if response == 's':
             validResponse = True
-        #TODO: Error handling on all the communications (if recieved 'e'...)
+        elif response == 'e':
+            pass
         else:
-            report_error("Start computer gamemode")
+            report_serial_error("Start computer gamemode")
     
     print("I'm ready, you can start :)")
     while(1):
@@ -186,7 +198,7 @@ def loop_normal():
         elif response == 'e':
             pass
         else:
-            report_error("Start normal gamemode")
+            report_serial_error("Start normal gamemode")
 
     print("I'm ready, you can start :)")
     while(1):
@@ -228,8 +240,10 @@ def loop_960():
         response = read_block_serial()
         if response == 's':
             validResponse = True
+        elif response == 'e':
+            pass
         else:
-            report_error("Start 960 gamemode")
+            report_serial_error("Start 960 gamemode")
 
     print("I'm ready, you can start :)")
     while(1):
