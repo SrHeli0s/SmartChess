@@ -315,10 +315,9 @@ void getMoves(struct piece p, unsigned char* output) {
 	}
 }
 
-//Pre: "new" is an array of size 144 representing the lastest detection of the board. "middle" is an array of size 144 representing the middle detection of the board
+//Pre: "new" is an array of size 144 representing the latest detection of the board. "middle" is an array of size 144 representing the middle detection of the board
 //Post: Checks the move made and executes it if its legal, returning 0. Returns -1 if not legal.
 int makeMove(unsigned char* new, unsigned char* middle) {
-	//TODO: Handle promotion of pawns to queen
 	unsigned char nMoves = 0;
 	unsigned char positions[144] = {0}; //144 to prevent overflow
 	//Get piece(s) that moved
@@ -428,6 +427,14 @@ int makeMove(unsigned char* new, unsigned char* middle) {
 		//Check if move is in the list of possible moves and execute if legal
 		getMoves(*p,possibleMoves);
 		if(possibleMoves[final_pos]==1) {
+			//Promotion of pawns
+			if (turn == COLOR_W) {
+				if(final_pos>109 && p->type==P_PAWN) { p->type = P_QUEEN; }
+			}
+			else {
+				if(final_pos<34 && p->type==P_PAWN) { p->type = P_QUEEN; }
+			}
+			
 			p->pos = final_pos;
 			p->nMoves += 1;
 			for(int i = 26; i<118; i++) {
