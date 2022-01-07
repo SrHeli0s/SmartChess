@@ -104,13 +104,25 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="chess.c">
+    <Compile Include="board.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="chess.h">
+    <Compile Include="board.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="piece.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="piece.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="usart.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="usart.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

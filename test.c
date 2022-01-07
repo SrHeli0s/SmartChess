@@ -68,7 +68,9 @@ int tryMove(char* move1, char* move2) {
     }
     printf("Final board:\n");
     print_board(detected_position);
-    
+    char translation[] = "";
+    translateMove(detected_position,middle_position,translation);
+    printf("Move: %s+%s, translated: %s\n",move1,move2,translation);
     //Simulate move
     return makeMove(detected_position,middle_position);
 }
@@ -89,7 +91,16 @@ int main() {
     printf("\n\nEND OF GAME:\n");
     print_board(actual_position);
 
-    
-    
+    printf("NOW PRINTING THE DIAGONAL:");
+    for (int i = 26; i<118; i=i+13) {
+        char output[] = "";
+        translateSquare(i,output);
+        printf(output);
+    }
+
+
+
+
+
     return 0;
 }

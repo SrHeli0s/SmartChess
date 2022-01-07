@@ -19,7 +19,12 @@ extern unsigned char turn;
 void prepareGame();
 void updateAttackMap(int c);
 
+void translateSquare(int pos, char* output);
+void translateMove(unsigned char* new, unsigned char* middle, char* output);
+
 unsigned char compareBoards(unsigned char* a, unsigned char* b);
 void copyBoards(unsigned char* from, unsigned char* to);
+
+int makeMove(unsigned char* new, unsigned char* middle);
 	
 #endif /* BOARD_H_ */

@@ -26,6 +26,5 @@ extern struct piece *lastPiece;
 void getAttacks(struct piece p, unsigned char* output);
 void getMoves(struct piece p, unsigned char* output);
 
-int makeMove(unsigned char* new, unsigned char* middle);
 
 #endif /* PIECE_H_ */

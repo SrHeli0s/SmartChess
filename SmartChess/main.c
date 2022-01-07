@@ -1,6 +1,6 @@
 /* Smart Chess 1.0
  *	PB1-PB3 Output to the reed net
- *  PB0, PD7-PD5, PB7-PB6, PD4-PD3 Input from the reed net
+ *  PB0, PD7-PD5, PB7-PB6, PD4-PD3 Input from the reed net		TODO: NO, PD2 ES DEL EXTERNAL INTERRUPT
  * IDEAS:
  *	Light sensor that lights up the board when there is not enough light to see
  *	Time control via timers + display?
@@ -43,14 +43,34 @@ void readBoard(unsigned char* output) {
 	}
 }
 
+ISR(INT0_vect) { //The button has been pressed
+	char move[] = "";
+	//TODO: What happens if this fails?
+	translateMove(detected_position,middle_position,move);
+	
+	if (makeMove(detected_position,middle_position) == 0) { //Legal move
+		USART_transmit_str(move)
+	}
+	else { //Ilegal move
+		//TODO: set red led on
+		while(1) { //Wait until previous position is detected
+			readBoard(detected_position);
+			if (compareBoards(detected_position,actual_position) == 0) {
+				break;
+			}
+		}
+	}
+}
 
-int main(void)
-{
+int main(void) {
 	// PB1-PB3 Output to the reed net
 	// PB0, PD7-PD5, PB7-PB6, PD4-PD3 Input from the reed net
 	// PD0-PD1 output to serial
 	DDRB |= (1<<PB1) | (1<<PB2) | (1<<PB3);
 	USART_init(UBRR);
+	EIMSK |= (1<<INT0); //Enable external interruptions on pin INT0 (=PD2)
+	EICRA |= (1<<ISC00); //Any logical change on INT0 generates an interrupt request.
+	sei();
 	
 	char r = '#';
 	while(1)
