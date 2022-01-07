@@ -49,7 +49,7 @@ ISR(INT0_vect) { //The button has been pressed
 	translateMove(detected_position,middle_position,move);
 	
 	if (makeMove(detected_position,middle_position) == 0) { //Legal move
-		USART_transmit_str(move)
+		USART_transmit_str(move);
 	}
 	else { //Ilegal move
 		//TODO: set red led on

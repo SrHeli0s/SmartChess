@@ -1,5 +1,4 @@
 #include "usart.h"
-#include "board.h"
 #include <xc.h>
 
 //Pre: The USART is in a unknown/bad state
