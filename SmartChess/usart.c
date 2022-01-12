@@ -47,3 +47,32 @@ unsigned char USART_block_recieve() {
 unsigned char USART_noblock_recieve() {
 	return(UDR0);		// Return the byte
 }
+
+void USART_transmit_board(unsigned char* board) {
+	for (int i = 0; i<8; i++) {
+		while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
+		UDR0 = '-'; // Put data into buffer and send the data
+	}
+	while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
+	UDR0 = '\n'; // Put data into buffer and send the data
+	for (int i = 26; i<118; i++) {
+		if(i%12 > 9 || i%12 < 2) {continue;} //Skip outside of the board
+
+		while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
+		UDR0 = board[i]; // Put data into buffer and send the data
+		
+		if(i%12 == 9) {
+			while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
+			UDR0 = '\n'; // Put data into buffer and send the data
+		}
+	}
+	for (int i = 0; i<8; i++) {
+		while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
+		UDR0 = '-'; // Put data into buffer and send the data
+	}
+	while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
+	UDR0 = '\n'; // Put data into buffer and send the data
+	while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
+	UDR0 = '\n'; // Put data into buffer and send the data
+	
+}

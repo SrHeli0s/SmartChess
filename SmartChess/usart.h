@@ -13,5 +13,6 @@ unsigned char USART_noblock_transmit(unsigned char data);
 void USART_transmit_str(const char* str);
 unsigned char USART_block_recieve();
 unsigned char USART_noblock_recieve();
+void USART_transmit_board(unsigned char* board);
 
 #endif /* USART_H_ */
