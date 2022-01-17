@@ -59,7 +59,13 @@ void USART_transmit_board(unsigned char* board) {
 		if(i%12 > 9 || i%12 < 2) {continue;} //Skip outside of the board
 
 		while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
-		UDR0 = board[i]; // Put data into buffer and send the data
+		// Put data into buffer and send the data
+		if (board[i] == 0) {
+			UDR0 = '0'; 
+		}
+		else {
+			UDR0 = 'X';
+		}
 		
 		if(i%12 == 9) {
 			while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
