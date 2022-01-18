@@ -60,7 +60,7 @@ void USART_transmit_board(unsigned char* board) {
 
 		while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
 		// Put data into buffer and send the data
-		if (board[i] == 0) {
+		if (board[i] == (uint8_t)0) {
 			UDR0 = '0'; 
 		}
 		else {

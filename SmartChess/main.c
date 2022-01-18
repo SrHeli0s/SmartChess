@@ -89,11 +89,13 @@ void readBoard(unsigned char* output) {
 	int i=26; //for offset
 	
 	PORTD |= (1<<PD3);
+	_delay_ms(10)
 	readRow(&output[i]);
 	PORTD &= ~(1<<PD3);
 	i+=MOVE_N;
 	
 	PORTD |= (1<<PD4);
+	_delay_ms(10)
 	readRow(&output[i]);
 	
 	char buffer[10];
@@ -105,34 +107,41 @@ void readBoard(unsigned char* output) {
 	i+=MOVE_N;
 	
 	PORTB |= (1<<PB6);
+	_delay_ms(10)
 	readRow(&output[i]);
 	PORTB &= ~(1<<PB6);
 	i+=MOVE_N;
 	
 	PORTB |= (1<<PB7);
+	_delay_ms(10)
 	readRow(&output[i]);
 	PORTB &= ~(1<<PB7);
 	i+=MOVE_N;
 	
 	PORTD |= (1<<PD5);
+	_delay_ms(10)
 	readRow(&output[i]);
 	PORTD &= ~(1<<PD5);
 	i+=MOVE_N;
 	
 	PORTD |= (1<<PD6);
+	_delay_ms(10)
 	readRow(&output[i]);
 	PORTD &= ~(1<<PD6);
 	i+=MOVE_N;
 	
 	PORTD |= (1<<PD7);
+	_delay_ms(10)
 	readRow(&output[i]);
 	PORTD &= ~(1<<PD7);
 	i+=MOVE_N;
 	
 	PORTB |= (1<<PB0);
+	_delay_ms(10)
 	readRow(&output[i]);
 	PORTB &= ~(1<<PB0);
 	
+	////Code for the DEMUX way:
 	//int i=26; //for offset
 	//for (int j = 0; j<8; j++) {
 		//PORTD |= (j<<PD5);
@@ -163,16 +172,16 @@ ISR(INT0_vect) { //The button has been pressed
 
 int main(void) {
 	/*
-	 *	PD5-7 Output to the reed net
+	 *	PD3-7 PB6-7 PB0 Output to the reed net
 	 *  PC0-5 PB1-2 Input from the reed net
 	 *  PD2 External interrupt
 	 */
-	DDRD |= (1<<PD5) | (1<<PD6) | (1<<PD7);
-	if (DEBUG_MODE == 1) {
-		DDRD |= (1<<PD3) | (1<<PD4);
-		DDRB |= (1<<PB6) | (1<<PB7) | (1<<PB0);
-	}
+	DDRD |= (1<<PD3) | (1<<PD4) | (1<<PD5) | (1<<PD6) | (1<<PD7);
+	DDRB |= (1<<PB6) | (1<<PB7) | (1<<PB0);
 	USART_init(UBRR);
+	EIMSK |= (1<<INT0); //Enable external interruptions on pin INT0 (=PD2)
+	EICRA |= (1<<ISC00); //Any logical change on INT0 generates an interrupt request.
+	sei();
 	if (DEBUG_MODE == 1) {
 		while(1) {
 			readBoard(detected_position);
@@ -180,12 +189,6 @@ int main(void) {
 			_delay_ms(1000);
 		}
 	}
-	
-	EIMSK |= (1<<INT0); //Enable external interruptions on pin INT0 (=PD2)
-	EICRA |= (1<<ISC00); //Any logical change on INT0 generates an interrupt request.
-	sei();
-	
-	
 	
 	char r = '#';
 	while(1)
