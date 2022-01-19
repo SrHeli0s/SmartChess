@@ -14,7 +14,8 @@ void USART_init(unsigned int baud) {
 //Pre: "data" contains a character to send using USART
 //Post: The function sends the character when possible
 void USART_block_transmit(unsigned char data) {
-	while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
+	while (!(UCSR0A & (1<<UDRE0))) { PORTB |= (1<<PB5); }; // Wait for empty transmit buffer
+	PORTB &= ~(1<<PB5);
 	UDR0 = data; // Put data into buffer and send the data
 }
 
@@ -50,35 +51,28 @@ unsigned char USART_noblock_recieve() {
 
 void USART_transmit_board(unsigned char* board) {
 	for (int i = 0; i<8; i++) {
-		while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
-		UDR0 = '-'; // Put data into buffer and send the data
+		USART_block_transmit('-');
 	}
-	while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
-	UDR0 = '\n'; // Put data into buffer and send the data
+	USART_block_transmit('\n');
 	for (int i = 26; i<118; i++) {
 		if(i%12 > 9 || i%12 < 2) {continue;} //Skip outside of the board
 
-		while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
 		// Put data into buffer and send the data
 		if (board[i] == (uint8_t)0) {
-			UDR0 = '0'; 
+			USART_block_transmit('0'); 
 		}
 		else {
-			UDR0 = 'X';
+			USART_block_transmit('X');
 		}
 		
 		if(i%12 == 9) {
-			while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
-			UDR0 = '\n'; // Put data into buffer and send the data
+			USART_block_transmit('\n');
 		}
 	}
 	for (int i = 0; i<8; i++) {
-		while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
-		UDR0 = '-'; // Put data into buffer and send the data
+		USART_block_transmit('-');
 	}
-	while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
-	UDR0 = '\n'; // Put data into buffer and send the data
-	while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer
-	UDR0 = '\n'; // Put data into buffer and send the data
+	USART_block_transmit('\n');
+	USART_block_transmit('\n');
 	
 }

@@ -22,124 +22,156 @@
 #include "board.h"
 #include "usart.h"
 
-const uint8_t MASKS[8] = {(1>>PB1), (1>>PB2), (1>>PC0), (1>>PC1), (1>>PC2), (1>>PC3), (1>>PC4), (1>>PC5)};
+const uint8_t MASKS[8] = {(1>>PINB1), (1>>PB2), (1>>PC0), (1>>PC1), (1>>PC2), (1>>PC3), (1>>PC4), (1>>PC5)};
 
 //Pre: "output" is an array of at least 8 chars in a known state.
 //Post: The row read data is saved to the array
-void readRow(unsigned char* output) {
-	if ((PORTB & MASKS[0]) == 0) {
-		output[0] = (uint8_t)0;
+void readRow(unsigned char output[]) {
+	unsigned char buffer[20] = "";
+	itoa((PINB & MASKS[0]),buffer,2);
+	USART_transmit_str(buffer);
+	if ((PINB & MASKS[0]) == 0) {
+		output[0] = 0;
+		//USART_block_transmit('0');
 	}
 	else {
-		output[0] = (uint8_t)1;
-	}
-	if ((PORTB & MASKS[1]) == 0) {
-		output[1] = (uint8_t)0;
-	}
-	else {
-		output[1] = (uint8_t)1;
-	}
-	if ((PORTC & MASKS[2]) == 0) {
-		output[2] = (uint8_t)0;
-	}
-	else {
-		output[2] = (uint8_t)1;
+		output[0] = 1;
+		//USART_block_transmit('X');
 	}
 	
-	if ((PORTC & MASKS[3]) == 0) {
-		output[3] = (uint8_t)0;
+	itoa((PINB & MASKS[1]),buffer,2);
+	USART_transmit_str(buffer);
+	
+	if ((PINB & MASKS[1]) == 0) {
+		output[1] = 0;
+		//USART_block_transmit('0');
 	}
 	else {
-		output[3] = (uint8_t)1;
+		output[1] = 1;
+		//USART_block_transmit('X');
 	}
 	
-	if ((PORTC & MASKS[4]) == 0) {
-		output[4] = (uint8_t)0;
+	itoa((PINC & MASKS[2]),buffer,2);
+	USART_transmit_str(buffer);
+	
+	if ((PINC & MASKS[2]) == 0) {
+		output[2] = 0;
+		//USART_block_transmit('0');
 	}
 	else {
-		output[4] = (uint8_t)1;
+		output[2] = 1;
+		//USART_block_transmit('X');
 	}
 	
-	if ((PORTC & MASKS[5]) == 0) {
-		output[5] = (uint8_t)0;
+	itoa((PINC & MASKS[3]),buffer,2);
+	USART_transmit_str(buffer);
+	
+	if ((PINC & MASKS[3]) == 0) {
+		output[3] = 0;
+		//USART_block_transmit('0');
 	}
 	else {
-		output[5] = (uint8_t)1;
+		output[3] = 1;
+		//USART_block_transmit('X');
 	}
 	
-	if ((PORTC & MASKS[6]) == 0) {
-		output[6] = (uint8_t)0;
+	itoa((PINC & MASKS[4]),buffer,2);
+	USART_transmit_str(buffer);
+	
+	if ((PINC & MASKS[4]) == 0) {
+		output[4] = 0;
+		//USART_block_transmit('0');
 	}
 	else {
-		output[6] = (uint8_t)1;
+		output[4] = 1;
+		//USART_block_transmit('X');
 	}
 	
-	if ((PORTC & MASKS[7]) == 0) {
-		output[7] = (uint8_t)0;
+	itoa((PINC & MASKS[5]),buffer,2);
+	USART_transmit_str(buffer);
+	
+	if ((PINC & MASKS[5]) == 0) {
+		output[5] = 0;
+		//USART_block_transmit('0');
 	}
 	else {
-		output[7] = (uint8_t)1;
+		output[5] = 1;
+		//USART_block_transmit('X');
 	}
+	
+	itoa((PINC & MASKS[6]),buffer,2);
+	USART_transmit_str(buffer);
+	
+	if ((PINC & MASKS[6]) == 0) {
+		output[6] = 0;
+		//USART_block_transmit('0');
+	}
+	else {
+		output[6] = 1;
+		//USART_block_transmit('X');
+	}
+	
+	itoa((PINC & MASKS[7]),buffer,2);
+	USART_transmit_str(buffer);
+	
+	if ((PINC & MASKS[7]) == 0) {
+		output[7] = 0;
+		//USART_block_transmit('0');
+	}
+	else {
+		output[7] = 1;
+		//USART_block_transmit('X');
+	}
+
+	USART_block_transmit('\n');
 	
 }
 
 //Pre: "output" is an array of 144 chars in a known state.
 //Post: The board is read and stored in "output".
-void readBoard(unsigned char* output) {
+void readBoard(unsigned char output[]) {
 	int i=26; //for offset
 	
 	PORTD |= (1<<PD3);
-	_delay_ms(10)
 	readRow(&output[i]);
 	PORTD &= ~(1<<PD3);
 	i+=MOVE_N;
 	
 	PORTD |= (1<<PD4);
-	_delay_ms(10)
 	readRow(&output[i]);
-	
-	char buffer[10];
-	itoa((uint8_t)PORTC,buffer,2);
-	USART_transmit_str(buffer);
-	USART_block_transmit('\n');
-	
 	PORTD &= ~(1<<PD4);
 	i+=MOVE_N;
 	
 	PORTB |= (1<<PB6);
-	_delay_ms(10)
 	readRow(&output[i]);
 	PORTB &= ~(1<<PB6);
 	i+=MOVE_N;
 	
 	PORTB |= (1<<PB7);
-	_delay_ms(10)
 	readRow(&output[i]);
 	PORTB &= ~(1<<PB7);
 	i+=MOVE_N;
 	
 	PORTD |= (1<<PD5);
-	_delay_ms(10)
 	readRow(&output[i]);
 	PORTD &= ~(1<<PD5);
 	i+=MOVE_N;
 	
 	PORTD |= (1<<PD6);
-	_delay_ms(10)
 	readRow(&output[i]);
 	PORTD &= ~(1<<PD6);
 	i+=MOVE_N;
 	
 	PORTD |= (1<<PD7);
-	_delay_ms(10)
 	readRow(&output[i]);
 	PORTD &= ~(1<<PD7);
 	i+=MOVE_N;
 	
 	PORTB |= (1<<PB0);
-	_delay_ms(10)
 	readRow(&output[i]);
 	PORTB &= ~(1<<PB0);
+	
+	USART_block_transmit('\n');
 	
 	////Code for the DEMUX way:
 	//int i=26; //for offset
@@ -152,6 +184,10 @@ void readBoard(unsigned char* output) {
 }
 
 ISR(INT0_vect) { //The button has been pressed
+	if(DEBUG_MODE == 1) {
+		USART_transmit_str("INTERRUPT\n");
+		return;
+	}
 	char move[] = "";
 	//TODO: What happens if this fails?
 	translateMove(detected_position,middle_position,move);
@@ -178,15 +214,20 @@ int main(void) {
 	 */
 	DDRD |= (1<<PD3) | (1<<PD4) | (1<<PD5) | (1<<PD6) | (1<<PD7);
 	DDRB |= (1<<PB6) | (1<<PB7) | (1<<PB0);
+	DDRB |= (1<<PB5);
+	PORTB |= (1<<PB5);
 	USART_init(UBRR);
+	prepareGame();
 	EIMSK |= (1<<INT0); //Enable external interruptions on pin INT0 (=PD2)
-	EICRA |= (1<<ISC00); //Any logical change on INT0 generates an interrupt request.
+	EICRA |= (1<<ISC11); //Falling edge on INT0 generates an interrupt request.
 	sei();
 	if (DEBUG_MODE == 1) {
+		_delay_ms(2000);
+		USART_transmit_str("BEGIN DEBUG");
+		PORTB &= ~(1<<PB5);
 		while(1) {
+			//USART_transmit_board(detected_position);
 			readBoard(detected_position);
-			USART_transmit_board(detected_position);
-			_delay_ms(1000);
 		}
 	}
 	
