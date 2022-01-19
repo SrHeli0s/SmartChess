@@ -17,8 +17,6 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <util/delay.h>
-#include <stdlib.h>
-#include <avr/power.h>
 #include "piece.h"
 #include "board.h"
 #include "usart.h"
