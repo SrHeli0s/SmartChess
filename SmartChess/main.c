@@ -27,84 +27,84 @@
 void readRow(unsigned char output[]) {
 	if (PINB & (1<<PINB1)) {
 		output[0] = 0;
-		USART_block_transmit('0');
+		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
 	}
 	else {
 		output[0] = 1;
-		USART_block_transmit('X');
+		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
 	}
 	
 	
 	if (PINB & (1<<PINB2)) {
 		output[1] = 0;
-		USART_block_transmit('0');
+		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
 	}
 	else {
 		output[1] = 1;
-		USART_block_transmit('X');
+		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
 	}
 	
 	
 	if (PINC & (1<<PINC0)) {
 		output[2] = 0;
-		USART_block_transmit('0');
+		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
 	}
 	else {
 		output[2] = 1;
-		USART_block_transmit('X');
+		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
 	}
 	
 	
 	if (PINC & (1<<PINC1)) {
 		output[3] = 0;
-		USART_block_transmit('0');
+		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
 	}
 	else {
 		output[3] = 1;
-		USART_block_transmit('X');
+		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
 	}
 	
 	
 	if (PINC & (1<<PINC2)) {
 		output[4] = 0;
-		USART_block_transmit('0');
+		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
 	}
 	else {
 		output[4] = 1;
-		USART_block_transmit('X');
+		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
 	}
 	
 	
 	if (PINC & (1<<PINC3)) {
 		output[5] = 0;
-		USART_block_transmit('0');
+		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
 	}
 	else {
 		output[5] = 1;
-		USART_block_transmit('X');
+		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
 	}
 	
 	
 	if (PINC & (1<<PINC4)) {
 		output[6] = 0;
-		USART_block_transmit('0');
+		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
 	}
 	else {
 		output[6] = 1;
-		USART_block_transmit('X');
+		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
 	}
 	
 	
 	if (PINC & (1<<PINC5)) {
 		output[7] = 0;
-		USART_block_transmit('0');
+		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
 	}
 	else {
 		output[7] = 1;
-		USART_block_transmit('X');
+		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
 	}
 
-	USART_block_transmit('\n');
+	if (DEBUG_MODE == 1) { USART_block_transmit('\n'); }
 	
 }
 
@@ -152,7 +152,7 @@ void readBoard(unsigned char output[]) {
 	readRow(&output[i]);
 	PORTB &= ~(1<<PB0);
 	
-	USART_block_transmit('\n');
+	if (DEBUG_MODE == 1) { USART_block_transmit('\n'); }
 	
 	////Code for the DEMUX way:
 	//int i=26; //for offset
@@ -170,17 +170,18 @@ ISR(INT0_vect) { //The button has been pressed
 		return;
 	}
 	char move[] = "";
-	//TODO: What happens if this fails?
+	//NOTE: What happens if this fails?
 	translateMove(detected_position,middle_position,move);
 	
 	if (makeMove(detected_position,middle_position) == 0) { //Legal move
 		USART_transmit_str(move);
 	}
 	else { //Illegal move
-		//TODO: set red led on
+		PORTB |= (1<<PB5);
 		while(1) { //Wait until previous position is detected
 			readBoard(detected_position);
 			if (compareBoards(detected_position,actual_position) == 0) {
+				PORTB &= ~(1<<PB5);
 				break;
 			}
 		}
