@@ -1,5 +1,5 @@
-#ifndef BOARD_H_
-#define BOARD_H_
+#ifndef BOARDSHOWCASE_H_
+#define BOARDSHOWCASE_H_
 
 #define MOVE_N 12
 #define MOVE_S -12
@@ -27,4 +27,4 @@ void copyBoards(unsigned char* from, unsigned char* to);
 
 int makeMove(unsigned char* new, unsigned char* middle);
 	
-#endif /* BOARD_H_ */
+#endif /* BOARDSHOWCASE_H_ */

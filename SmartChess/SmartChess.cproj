@@ -110,6 +110,12 @@
     <Compile Include="board.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="boardShowcase.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="boardShowcase.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
@@ -117,6 +123,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="piece.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="pieceShowcase.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="pieceShowcase.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="usart.c">

@@ -1,39 +1,11 @@
-#include "piece.h"
-#include "board.h"
+#include "pieceShowcase.h"
+#include "boardShowcase.h"
 #include <stdlib.h> //To use NULL
 
-struct piece gamePieces[32] = {	{P_PAWN,COLOR_W,38,0,1},
-								{P_PAWN,COLOR_W,39,0,1},
-								{P_PAWN,COLOR_W,40,0,1},
-								{P_PAWN,COLOR_W,41,0,1},
-								{P_PAWN,COLOR_W,42,0,1},
-								{P_PAWN,COLOR_W,43,0,1},
-								{P_PAWN,COLOR_W,44,0,1},
-								{P_PAWN,COLOR_W,45,0,1},
-								{P_BISHOP,COLOR_W,28,0,1},
-								{P_BISHOP,COLOR_W,31,0,1},
-								{P_KNIGHT,COLOR_W,27,0,1},
+struct piece gamePieces[4] = {	{P_BISHOP,COLOR_W,28,0,1},//TODO: set pieces positions
 								{P_KNIGHT,COLOR_W,32,0,1},
-								{P_ROOK,COLOR_W,26,0,1},
 								{P_ROOK,COLOR_W,33,0,1},
-								{P_KING,COLOR_W,30,0,1},
-								{P_QUEEN,COLOR_W,29,0,1},
-								{P_PAWN,COLOR_B,98,0,1},
-								{P_PAWN,COLOR_B,99,0,1},
-								{P_PAWN,COLOR_B,100,0,1},
-								{P_PAWN,COLOR_B,101,0,1},
-								{P_PAWN,COLOR_B,102,0,1},
-								{P_PAWN,COLOR_B,103,0,1},
-								{P_PAWN,COLOR_B,104,0,1},
-								{P_PAWN,COLOR_B,105,0,1},
-								{P_BISHOP,COLOR_B,112,0,1},
-								{P_BISHOP,COLOR_B,115,0,1},
-								{P_KNIGHT,COLOR_B,111,0,1},
-								{P_KNIGHT,COLOR_B,116,0,1},
-								{P_ROOK,COLOR_B,110,0,1},
-								{P_ROOK,COLOR_B,117,0,1},
-								{P_KING,COLOR_B,114,0,1},
-								{P_QUEEN,COLOR_B,113,0,1}
+								{P_QUEEN,COLOR_W,29,0,1}
 								};
 
 struct piece *lastPiece = NULL;
@@ -208,51 +180,53 @@ void getMoves(struct piece p, unsigned char* output) {
 			}
 			break;
 			
-			case P_KING:
-			getAttacks(p,output);
-			if (p.color == COLOR_W) {
-				//Delete moves that put the king in check
-				updateAttackMap(COLOR_B);
-				for (int i = 26; i<118; i++) {
-					if(i%MOVE_N > 9 || i%MOVE_N < 2) {continue;} //Skip outside of the board
-					if (output[i]==1 && black_attacks[i]==1) { output[i]=0; }
-				}
-				//Castling
-				if (black_attacks[p.pos]==0) { //Not in check
-					if (p.nMoves==0) {
-						//Long castle
-						if(gamePieces[12].nMoves==0 && black_attacks[28]==0 && black_attacks[29]==0 && actual_position[27]==0 && actual_position[28]==0 && actual_position[29]==0) { //Rook didn't move, no checks or pieces in the way
-							output[28] = 1;
-						}
-						//Short castle
-						if(gamePieces[13].nMoves==0 && black_attacks[31]==0 && black_attacks[32]==0 && actual_position[31]==0 && actual_position[32]==0) { //Rook didn't move, no checks or pieces in the way
-							output[32] = 1;
-						}
-					}
-				}
-			}
-			else {
-				//Delete moves that put the king in check
-				updateAttackMap(COLOR_W);
-				for (int i = 26; i<118; i++) {
-					if(i%MOVE_N > 9 || i%MOVE_N < 2) {continue;} //Skip outside of the board
-					if (output[i]==1 && white_attacks[i]==1) { output[i]=0; }
-				}
-				//Castling
-				if (white_attacks[p.pos]==0) { //Not in check
-					if (p.nMoves==0) {
-						//Long castle
-						if(gamePieces[28].nMoves==0 && white_attacks[113]==0 && white_attacks[112]==0 && actual_position[113]==0 && actual_position[112]==0 && actual_position[111]==0) { //Rook didn't move, no checks or pieces in the way
-							output[112] = 1;
-						}
-						//Short castle
-						if(gamePieces[29].nMoves==0 && white_attacks[115]==0 && white_attacks[116]==0 && actual_position[115]==0 && actual_position[116]==0) { //Rook didn't move, no checks or pieces in the way
-							output[116] = 1;
-						}
-					}
-				}
-			}
-			break;
+			//Commented to avoid possible errors in showcase:
+			
+			//case P_KING:
+			//getAttacks(p,output);
+			//if (p.color == COLOR_W) {
+				////Delete moves that put the king in check
+				//updateAttackMap(COLOR_B);
+				//for (int i = 26; i<118; i++) {
+					//if(i%MOVE_N > 9 || i%MOVE_N < 2) {continue;} //Skip outside of the board
+					//if (output[i]==1 && black_attacks[i]==1) { output[i]=0; }
+				//}
+				////Castling
+				//if (black_attacks[p.pos]==0) { //Not in check
+					//if (p.nMoves==0) {
+						////Long castle
+						//if(gamePieces[12].nMoves==0 && black_attacks[28]==0 && black_attacks[29]==0 && actual_position[27]==0 && actual_position[28]==0 && actual_position[29]==0) { //Rook didn't move, no checks or pieces in the way
+							//output[28] = 1;
+						//}
+						////Short castle
+						//if(gamePieces[13].nMoves==0 && black_attacks[31]==0 && black_attacks[32]==0 && actual_position[31]==0 && actual_position[32]==0) { //Rook didn't move, no checks or pieces in the way
+							//output[32] = 1;
+						//}
+					//}
+				//}
+			//}
+			//else {
+				////Delete moves that put the king in check
+				//updateAttackMap(COLOR_W);
+				//for (int i = 26; i<118; i++) {
+					//if(i%MOVE_N > 9 || i%MOVE_N < 2) {continue;} //Skip outside of the board
+					//if (output[i]==1 && white_attacks[i]==1) { output[i]=0; }
+				//}
+				////Castling
+				//if (white_attacks[p.pos]==0) { //Not in check
+					//if (p.nMoves==0) {
+						////Long castle
+						//if(gamePieces[28].nMoves==0 && white_attacks[113]==0 && white_attacks[112]==0 && actual_position[113]==0 && actual_position[112]==0 && actual_position[111]==0) { //Rook didn't move, no checks or pieces in the way
+							//output[112] = 1;
+						//}
+						////Short castle
+						//if(gamePieces[29].nMoves==0 && white_attacks[115]==0 && white_attacks[116]==0 && actual_position[115]==0 && actual_position[116]==0) { //Rook didn't move, no checks or pieces in the way
+							//output[116] = 1;
+						//}
+					//}
+				//}
+			//}
+			//break;
 
 			default:
 				getAttacks(p,output);

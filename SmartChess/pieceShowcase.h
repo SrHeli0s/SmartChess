@@ -1,5 +1,5 @@
-#ifndef PIECE_H_
-#define PIECE_H_
+#ifndef PIECESHOWCASE_H_
+#define PIECESHOWCASE_H_
 
 #define COLOR_W 1
 #define COLOR_B 0
@@ -19,7 +19,7 @@ struct piece {
 	unsigned char alive;
 };
 
-extern struct piece gamePieces[32];
+extern struct piece gamePieces[4];
 extern struct piece *lastPiece;
 
 
@@ -27,4 +27,4 @@ void getAttacks(struct piece p, unsigned char* output);
 void getMoves(struct piece p, unsigned char* output);
 
 
-#endif /* PIECE_H_ */
+#endif /* PIECESHOWCASE_H_ */

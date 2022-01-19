@@ -17,8 +17,8 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <util/delay.h>
-#include "piece.h"
-#include "board.h"
+#include "pieceShowcase.h"
+#include "boardShowcase.h"
 #include "usart.h"
 
 
@@ -207,7 +207,6 @@ int main(void) {
 		USART_transmit_str("BEGIN DEBUG");
 		PORTB &= ~(1<<PB5);
 		while(1) {
-			//USART_transmit_board(detected_position);
 			readBoard(detected_position);
 		}
 	}
@@ -215,7 +214,7 @@ int main(void) {
 	
 	
 	EIMSK |= (1<<INT0); //Enable external interruptions on pin INT0 (=PD2)
-	EICRA |= (1<<ISC11); //Falling edge on INT0 generates an interrupt request.
+	EICRA &= ~((1<<ISC11) | (1<<ISC10)); //Low level on INT0 generates an interrupt request.
 	sei();
 	
 	char r = '#';
@@ -233,12 +232,29 @@ int main(void) {
 			}
 		}
 		
+		char move[] = "";
 		//Game loop
 		while(1) {
 			readBoard(detected_position);
 			if(compareBoards(detected_position,actual_position) != 0) {
 				if(compareBoards(actual_position,middle_position) == 0) {
 					copyBoards(detected_position,middle_position);
+				}
+			}
+			//Check if new move:
+			if (PIND & PIND2) {
+				if (makeMove(detected_position,middle_position) == 0) {
+					USART_transmit_str(move);
+				}
+				else { //Illegal move
+					PORTB |= (1<<PB5);
+					while(1) { //Wait until previous position is detected
+						readBoard(detected_position);
+						if (compareBoards(detected_position,actual_position) == 0) {
+							PORTB &= ~(1<<PB5);
+							break;
+						}
+					}
 				}
 			}
 		}
