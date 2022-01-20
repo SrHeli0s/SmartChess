@@ -1,17 +1,20 @@
-/* Smart Chess 1.0
- *	PD5-7 Output to the reed net
- *  PC0-5 PB1-2 Input from the reed net
- *  PD2 External interrupt
+/* Smart Chess 1.1
+ *  PD3-7 PB6-7 PB0 Output to the reed net
+ *  PC0-5 PB2-3 Input from the reed net
+ *  PB1 Blinking LED
+ *  PB4 Red LED
  * IDEAS:
  *	Light sensor that lights up the board when there is not enough light to see
  *	Time control via timers + display?
- *	Display of the battery of the board
  */
 
 #define DEBUG_MODE 0
 #ifndef F_CPU
 	#define F_CPU 8000000UL
 #endif
+#define PRECSALER 1024
+#define F_OUT 1 // output frequency
+#define VALUE ((((F_CPU/2)/PRECSALER)/F_OUT)-1)
 
 #include <xc.h>
 #include <avr/interrupt.h>
@@ -25,7 +28,7 @@
 //Pre: "output" is an array of at least 8 chars in a known state.
 //Post: The row read data is saved to the array
 void readRow(unsigned char output[]) {
-	if (PINB & (1<<PINB1)) {
+	if (PINB & (1<<PINB2)) {
 		output[0] = 0;
 		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
 	}
@@ -35,7 +38,7 @@ void readRow(unsigned char output[]) {
 	}
 	
 	
-	if (PINB & (1<<PINB2)) {
+	if (PINB & (1<<PINB3)) {
 		output[1] = 0;
 		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
 	}
@@ -190,22 +193,25 @@ ISR(INT0_vect) { //The button has been pressed
 
 int main(void) {
 	/*
-	 *	PD3-7 PB6-7 PB0 Output to the reed net
-	 *  PC0-5 PB1-2 Input from the reed net
-	 *  PD2 External interrupt
+	*  PD3-7 PB6-7 PB0 Output to the reed net
+	*  PC0-5 PB2-3 Input from the reed net
+	*  PB1 Blinking LED
+	*  PB5 Red LED
 	 */
 	DDRD |= (1<<PD3) | (1<<PD4) | (1<<PD5) | (1<<PD6) | (1<<PD7);
-	DDRB |= (1<<PB6) | (1<<PB7) | (1<<PB0);
+	DDRB |= (1<<PB0) | (1<<PB1) | (1<<PB5) | (1<<PB6) | (1<<PB7);
 	
-	DDRB |= (1<<PB5);
-	PORTB |= (1<<PB5);
+	
+	TCCR1A |= (1 << COM1A0); //Toggle on match
+	TCCR1B |= (1 << WGM12); //CTC mode
+	TCCR1B |= (1 << CS10) | (1 << CS12); //Prescaler to 1024
+	OCR1A = VALUE; //Set max value
 	
 	USART_init(UBRR);
 	prepareGame();
 	if (DEBUG_MODE == 1) {
 		_delay_ms(2000);
 		USART_transmit_str("BEGIN DEBUG");
-		PORTB &= ~(1<<PB5);
 		while(1) {
 			//USART_transmit_board(detected_position);
 			readBoard(detected_position);
@@ -215,7 +221,7 @@ int main(void) {
 	
 	
 	EIMSK |= (1<<INT0); //Enable external interruptions on pin INT0 (=PD2)
-	EICRA |= (1<<ISC11); //Falling edge on INT0 generates an interrupt request.
+	EICRA |= (1<<ISC10); //Any logical change on INT0 generates an interrupt request.
 	sei();
 	
 	char r = '#';
