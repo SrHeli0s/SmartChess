@@ -49,13 +49,13 @@ f = None
 def output_move(move):
     if output_type == 0:
         try:
-            stockfish.make_moves_from_current_position(move)
+            stockfish.make_moves_from_current_position([move])
             print(stockfish.get_board_visual()+"\n\n")
         except:
             report_serial_error("Make move")
     elif output_type == 1:
         try:
-            stockfish.make_moves_from_current_position(move)
+            stockfish.make_moves_from_current_position([move])
             for char in move:
                 keyboard.press(char)
                 keyboard.release(char)
@@ -64,7 +64,7 @@ def output_move(move):
             report_serial_error("Make move")
     elif output_type == 2:
         try:
-            stockfish.make_moves_from_current_position(move)
+            stockfish.make_moves_from_current_position([move])
             f.write(move+"\n")
         except:
             report_serial_error("Make move")
@@ -155,7 +155,7 @@ def loop_computer():
         print("Waiting move...", end='\r')
         move = read_move_block_serial()
         print("Move recieved: " + bcolors.OKBLUE + move + bcolors.ENDC)
-        stockfish.make_moves_from_current_position(move)
+        stockfish.make_moves_from_current_position([move])
         print("Thinking...", end='\r')
         for item in stockfish.get_top_moves():
             print("Move: " + bcolors.OKGREEN + item["Move"] + bcolors.ENDC + "   Evaluation: "+item["Centipawn"]+"   Mate:" + bcolors.OKCYAN + item["Mate"] + bcolors.ENDC)
