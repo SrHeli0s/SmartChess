@@ -1,17 +1,20 @@
-/* Smart Chess 1.0
- *	PD5-7 Output to the reed net
+/* Smart Chess 1.1
+ *	PD3-7 PB6-7 PB0 Output to the reed net
  *  PC0-5 PB1-2 Input from the reed net
- *  PD2 External interrupt
+ *  PB4 Blinking LED
+ *  PB5 Red LED
  * IDEAS:
  *	Light sensor that lights up the board when there is not enough light to see
  *	Time control via timers + display?
- *	Display of the battery of the board
  */
 
 #define DEBUG_MODE 0
 #ifndef F_CPU
 	#define F_CPU 8000000UL
 #endif
+#define PRECSALER 8
+#define F_OUT 1 // output frequency
+#define VALUE ((((FREQ/2)/PRECSALER)/F_OUT)-1)
 
 #include <xc.h>
 #include <avr/interrupt.h>
@@ -192,9 +195,17 @@ int main(void) {
 	/*
 	 *	PD3-7 PB6-7 PB0 Output to the reed net
 	 *  PC0-5 PB1-2 Input from the reed net
+	 *  PB4 Blinking LED
+	 *  PB5 Red LED
 	 */
 	DDRD |= (1<<PD3) | (1<<PD4) | (1<<PD5) | (1<<PD6) | (1<<PD7);
-	DDRB |= (1<<PB5) | (1<<PB6) | (1<<PB7) | (1<<PB0);
+	DDRB |= (1<<PB4) | (1<<PB5) | (1<<PB6) | (1<<PB7) | (1<<PB0);
+	
+	
+	TCCR1A |= (1 << COM1A0); //Toggle on match
+	TCCR1B |= (1 << WGM12); //CTC mode
+	TCCR1B |= (1 << CS10) | (1 << CS12); //Prescaler to 1024
+	OCR1A = VALUE; //Set max value
 	
 	USART_init(UBRR);
 	prepareGame();
