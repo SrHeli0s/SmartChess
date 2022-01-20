@@ -163,7 +163,6 @@ void getAttacks(struct piece p, unsigned char* output) {
 //Post: In output is stored the map of all the possible moves of "p"
 void getMoves(struct piece p, unsigned char* output) {
 	if (p.alive==1) {
-		unsigned char offset = p.pos;
 		//No kings or pawns in showcase
 		getAttacks(p,output);
 	}
