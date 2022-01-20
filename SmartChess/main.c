@@ -234,16 +234,19 @@ int main(void) {
 			}
 			//Check if new move:
 			if (PIND & PIND2) {
-				if (makeMove(detected_position,middle_position) == 0) {
-					USART_transmit_str(move);
-				}
-				else { //Illegal move
-					PORTB |= (1<<PB5);
-					while(1) { //Wait until previous position is detected
-						readBoard(detected_position);
-						if (compareBoards(detected_position,actual_position) == 0) {
-							PORTB &= ~(1<<PB5);
-							break;
+				if(compareBoards(actual_position,detected_position) == 0) {
+					translateMove(detected_position,middle_position,move);
+					if (makeMove(detected_position,middle_position) == 0) {
+						USART_transmit_str(move);
+					}
+					else { //Illegal move
+						PORTB |= (1<<PB5);
+						while(1) { //Wait until previous position is detected
+							readBoard(detected_position);
+							if (compareBoards(detected_position,actual_position) == 0) {
+								PORTB &= ~(1<<PB5);
+								break;
+							}
 						}
 					}
 				}

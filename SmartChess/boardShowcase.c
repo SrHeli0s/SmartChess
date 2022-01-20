@@ -102,7 +102,7 @@ void translateSquare(int pos, char* output) {
 }
 
 //Pre: new and middle represent a move that hasn't been done yet
-//Post: the coordinate notation of the move is returned
+//Post: the coordinate notation of the move is set in output
 void translateMove(unsigned char* new, unsigned char* middle, char* output) {
 	unsigned char nMoves = 0;
 	unsigned char positions[144] = {0}; //144 to prevent overflow
