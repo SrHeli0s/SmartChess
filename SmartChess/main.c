@@ -192,17 +192,14 @@ int main(void) {
 	/*
 	 *	PD3-7 PB6-7 PB0 Output to the reed net
 	 *  PC0-5 PB1-2 Input from the reed net
-	 *  PD2 External interrupt
 	 */
 	DDRD |= (1<<PD3) | (1<<PD4) | (1<<PD5) | (1<<PD6) | (1<<PD7);
-	DDRB |= (1<<PB6) | (1<<PB7) | (1<<PB0);
-	
-	DDRB |= (1<<PB5);
-	PORTB |= (1<<PB5);
+	DDRB |= (1<<PB5) | (1<<PB6) | (1<<PB7) | (1<<PB0);
 	
 	USART_init(UBRR);
 	prepareGame();
 	if (DEBUG_MODE == 1) {
+		PORTB |= (1<<PB5);
 		_delay_ms(2000);
 		USART_transmit_str("BEGIN DEBUG");
 		PORTB &= ~(1<<PB5);
@@ -210,12 +207,6 @@ int main(void) {
 			readBoard(detected_position);
 		}
 	}
-	
-	
-	
-	EIMSK |= (1<<INT0); //Enable external interruptions on pin INT0 (=PD2)
-	EICRA &= ~((1<<ISC11) | (1<<ISC10)); //Low level on INT0 generates an interrupt request.
-	sei();
 	
 	char r = '#';
 	while(1)

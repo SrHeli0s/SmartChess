@@ -67,7 +67,7 @@ void copyBoards(unsigned char* from, unsigned char* to) {
 //Pre: "pos" is an index of the map. "output" is a string
 //Post: The square name ([a-h][1-8]) is appended to output
 void translateSquare(int pos, char* output) {
-	switch (pos%12) {
+	switch (pos%12) {	//Conversion to ascii using (pos%12)+'a' not possible because of strange bug with atmega...
 		case 2:
 			strcat(output,"a");
 			break;
