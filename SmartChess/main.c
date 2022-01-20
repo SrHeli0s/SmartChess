@@ -12,9 +12,9 @@
 #ifndef F_CPU
 	#define F_CPU 8000000UL
 #endif
-#define PRECSALER 8
+#define PRECSALER 1024
 #define F_OUT 1 // output frequency
-#define VALUE ((((FREQ/2)/PRECSALER)/F_OUT)-1)
+#define VALUE ((((F_CPU/2)/PRECSALER)/F_OUT)-1)
 
 #include <xc.h>
 #include <avr/interrupt.h>
