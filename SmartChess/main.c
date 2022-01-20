@@ -1,8 +1,8 @@
 /* Smart Chess 1.1
- *	PD3-7 PB6-7 PB0 Output to the reed net
+ *  PD3-7 PB6-7 PB0 Output to the reed net
  *  PC0-5 PB2-3 Input from the reed net
- *  PB4 Blinking LED
- *  PB1 Red LED
+ *  PB1 Blinking LED
+ *  PB4 Red LED
  * IDEAS:
  *	Light sensor that lights up the board when there is not enough light to see
  *	Time control via timers + display?
@@ -193,10 +193,10 @@ ISR(INT0_vect) { //The button has been pressed
 
 int main(void) {
 	/*
-	 *	PD3-7 PB6-7 PB0 Output to the reed net
+	 *  PD3-7 PB6-7 PB0 Output to the reed net
 	 *  PC0-5 PB2-3 Input from the reed net
-	 *  PB4 Blinking LED
-	 *  PB1 Red LED
+	 *  PB1 Blinking LED
+	 *  PB4 Red LED
 	 */
 	DDRD |= (1<<PD3) | (1<<PD4) | (1<<PD5) | (1<<PD6) | (1<<PD7);
 	DDRB |= (1<<PB0) | (1<<PB1) | (1<<PB4) | (1<<PB5) | (1<<PB6) | (1<<PB7);
