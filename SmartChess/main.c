@@ -1,8 +1,8 @@
 /* Smart Chess 1.1
- *	PD3-7 PB6-7 PB0 Output to the reed net
+ *  PD3-7 PB6-7 PB0 Output to the reed net
  *  PC0-5 PB2-3 Input from the reed net
- *  PB4 Blinking LED
- *  PB1 Red LED
+ *  PB1 Blinking LED
+ *  PB5 Red LED
  * IDEAS:
  *	Light sensor that lights up the board when there is not enough light to see
  *	Time control via timers + display?
@@ -167,39 +167,15 @@ void readBoard(unsigned char output[]) {
 	//}
 }
 
-ISR(INT0_vect) { //The button has been pressed
-	if(DEBUG_MODE == 1) {
-		USART_transmit_str("INTERRUPT\n");
-		return;
-	}
-	char move[] = "";
-	//NOTE: What happens if this fails?
-	translateMove(detected_position,middle_position,move);
-	
-	if (makeMove(detected_position,middle_position) == 0) { //Legal move
-		USART_transmit_str(move);
-	}
-	else { //Illegal move
-		PORTB |= (1<<PB5);
-		while(1) { //Wait until previous position is detected
-			readBoard(detected_position);
-			if (compareBoards(detected_position,actual_position) == 0) {
-				PORTB &= ~(1<<PB5);
-				break;
-			}
-		}
-	}
-}
-
 int main(void) {
 	/*
-	 *	PD3-7 PB6-7 PB0 Output to the reed net
+	 *  PD3-7 PB6-7 PB0 Output to the reed net
 	 *  PC0-5 PB2-3 Input from the reed net
-	 *  PB4 Blinking LED
-	 *  PB1 Red LED
+	 *  PB1 Blinking LED
+	 *  PB5 Red LED
 	 */
 	DDRD |= (1<<PD3) | (1<<PD4) | (1<<PD5) | (1<<PD6) | (1<<PD7);
-	DDRB |= (1<<PB0) | (1<<PB1) | (1<<PB4) | (1<<PB5) | (1<<PB6) | (1<<PB7);
+	DDRB |= (1<<PB0) | (1<<PB1) | (1<<PB5) | (1<<PB6) | (1<<PB7);
 	
 	
 	TCCR1A |= (1 << COM1A0); //Toggle on match
