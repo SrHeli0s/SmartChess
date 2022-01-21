@@ -1,6 +1,5 @@
 #include "boardShowcase.h"
 #include "pieceShowcase.h"
-#include "usart.h"
 #include "string.h" //To use memset()
 #include <stdlib.h> //To use abs()
 #include <stdio.h> //To use sprintf()
