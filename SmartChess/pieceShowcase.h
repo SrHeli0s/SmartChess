@@ -23,8 +23,8 @@ extern struct piece gamePieces[4];
 extern struct piece *lastPiece;
 
 
-void getAttacks(struct piece p, unsigned char* output);
-void getMoves(struct piece p, unsigned char* output);
+void getAttacks(struct piece p);
+void getMoves(struct piece p);
 
 
 #endif /* PIECESHOWCASE_H_ */

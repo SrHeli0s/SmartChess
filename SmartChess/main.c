@@ -27,84 +27,84 @@
 
 //Pre: "output" is an array of at least 8 chars in a known state.
 //Post: The row read data is saved to the array
-void readRow(unsigned char output[]) {
+void readRow(int i) {
 	if (PINB & (1<<PINB2)) {
-		output[0] = 0;
-		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
+		detected_position[i+0] = (uint8_t)1;
+		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
 	}
 	else {
-		output[0] = 1;
-		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
+		detected_position[i+0] = (uint8_t)0;
+		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
 	}
 	
 	
 	if (PINB & (1<<PINB3)) {
-		output[1] = 0;
-		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
+		detected_position[i+1] = (uint8_t)1;
+		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
 	}
 	else {
-		output[1] = 1;
-		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
+		detected_position[i+1] = (uint8_t)0;
+		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
 	}
 	
 	
 	if (PINC & (1<<PINC0)) {
-		output[2] = 0;
-		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
+		detected_position[i+2] = (uint8_t)1;
+		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
 	}
 	else {
-		output[2] = 1;
-		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
+		detected_position[i+2] = (uint8_t)0;
+		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
 	}
 	
 	
 	if (PINC & (1<<PINC1)) {
-		output[3] = 0;
-		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
+		detected_position[i+3] = (uint8_t)1;
+		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
 	}
 	else {
-		output[3] = 1;
-		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
+		detected_position[i+3] = (uint8_t)0;
+		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
 	}
 	
 	
 	if (PINC & (1<<PINC2)) {
-		output[4] = 0;
-		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
+		detected_position[i+4] = (uint8_t)1;
+		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
 	}
 	else {
-		output[4] = 1;
-		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
+		detected_position[i+4] = (uint8_t)0;
+		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
 	}
 	
 	
 	if (PINC & (1<<PINC3)) {
-		output[5] = 0;
-		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
+		detected_position[i+5] = (uint8_t)1;
+		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
 	}
 	else {
-		output[5] = 1;
-		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
+		detected_position[i+5] = (uint8_t)0;
+		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
 	}
 	
 	
 	if (PINC & (1<<PINC4)) {
-		output[6] = 0;
-		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
+		detected_position[i+6] = (uint8_t)1;
+		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
 	}
 	else {
-		output[6] = 1;
-		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
+		detected_position[i+6] = (uint8_t)0;
+		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
 	}
 	
 	
 	if (PINC & (1<<PINC5)) {
-		output[7] = 0;
-		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
+		detected_position[i+7] = (uint8_t)1;
+		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
 	}
 	else {
-		output[7] = 1;
-		if(DEBUG_MODE==1) { USART_block_transmit('X'); }
+		detected_position[i+7] = (uint8_t)0;
+		if(DEBUG_MODE==1) { USART_block_transmit('0'); }
 	}
 
 	if (DEBUG_MODE == 1) { USART_block_transmit('\n'); }
@@ -113,46 +113,47 @@ void readRow(unsigned char output[]) {
 
 //Pre: "output" is an array of 144 chars in a known state.
 //Post: The board is read and stored in "output".
-void readBoard(unsigned char output[]) {
+void readBoard() {
 	int i=26; //for offset
 	
+	
 	PORTD |= (1<<PD3);
-	readRow(&output[i]);
+	readRow(i);
 	PORTD &= ~(1<<PD3);
 	i+=MOVE_N;
 	
 	PORTD |= (1<<PD4);
-	readRow(&output[i]);
+	readRow(i);
 	PORTD &= ~(1<<PD4);
 	i+=MOVE_N;
 	
 	PORTB |= (1<<PB6);
-	readRow(&output[i]);
+	readRow(i);
 	PORTB &= ~(1<<PB6);
 	i+=MOVE_N;
 	
 	PORTB |= (1<<PB7);
-	readRow(&output[i]);
+	readRow(i);
 	PORTB &= ~(1<<PB7);
 	i+=MOVE_N;
 	
 	PORTD |= (1<<PD5);
-	readRow(&output[i]);
+	readRow(i);
 	PORTD &= ~(1<<PD5);
 	i+=MOVE_N;
 	
 	PORTD |= (1<<PD6);
-	readRow(&output[i]);
+	readRow(i);
 	PORTD &= ~(1<<PD6);
 	i+=MOVE_N;
 	
 	PORTD |= (1<<PD7);
-	readRow(&output[i]);
+	readRow(i);
 	PORTD &= ~(1<<PD7);
 	i+=MOVE_N;
 	
 	PORTB |= (1<<PB0);
-	readRow(&output[i]);
+	readRow(i);
 	PORTB &= ~(1<<PB0);
 	
 	if (DEBUG_MODE == 1) { USART_block_transmit('\n'); }
@@ -188,10 +189,12 @@ int main(void) {
 	if (DEBUG_MODE == 1) {
 		PORTB |= (1<<PB5);
 		_delay_ms(2000);
-		USART_transmit_str("BEGIN DEBUG");
+		USART_transmit_str("BEGIN DEBUG\n");
+		USART_transmit_board(actual_position);
 		PORTB &= ~(1<<PB5);
 		while(1) {
-			readBoard(detected_position);
+			readBoard();
+			USART_transmit_board(detected_position);
 		}
 	}
 	
@@ -210,27 +213,21 @@ int main(void) {
 			}
 		}
 		
-		char move[] = "";
 		//Game loop
 		while(1) {
-			readBoard(detected_position);
-			if(compareBoards(detected_position,actual_position) != 0) {
-				if(compareBoards(actual_position,middle_position) == 0) {
-					copyBoards(detected_position,middle_position);
-				}
-			}
+			readBoard();
 			//Check if new move:
-			if (PIND & PIND2) {
-				if(compareBoards(actual_position,detected_position) == 0) {
-					translateMove(detected_position,middle_position,move);
-					if (makeMove(detected_position,middle_position) == 0) {
-						USART_transmit_str(move);
+			if (PIND & (1 << PIND2)) {
+				if(compareBoards() != 0) {
+					translateMove();
+					if (makeMove() == 0) {
+						USART_transmit_str(output);
 					}
 					else { //Illegal move
 						PORTB |= (1<<PB5);
 						while(1) { //Wait until previous position is detected
 							readBoard(detected_position);
-							if (compareBoards(detected_position,actual_position) == 0) {
+							if (compareBoards() == 0) {
 								PORTB &= ~(1<<PB5);
 								break;
 							}

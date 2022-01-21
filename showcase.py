@@ -1,5 +1,4 @@
-from stockfish import Stockfish
-from pynput import keyboard
+import chess
 import serial
 import time
 from pynput.keyboard import Key, Controller
@@ -26,28 +25,39 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-#Load stockfish
-stockfish = Stockfish("./stockfish_14.1_avx2/stockfish_14.1_win_x64_avx2",parameters={"Threads": 2, "Minimum Thinking Time": 10})
 #Open serial port
 try:
-    ser = serial.Serial('COM3',baudrate=9600, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE)  # open serial port
+    ser = serial.Serial('COM3',baudrate=9600, bytesize=8, timeout=None, stopbits=serial.STOPBITS_ONE)  # open serial port
     ser.reset_input_buffer()
     ser.reset_output_buffer()
 except:
     print(bcolors.WARNING + "\n[WARN] SERIAL NOT FOUND, RUNNING IN DEVELOPMENT MODE (ALL CALLS TO SERIAL WILL EXPLODE)" + bcolors.ENDC)
 #Configuration variables
 verbose = False
-move=0
+board=['□','□','□','□','□','□','□','□',
+       '□','□','□','□','□','□','□','□',
+       '□','□','□','□','□','□','□','□',
+       '□','□','□','□','□','□','□','□',
+       '□','□','□','□','□','□','□','□',
+       '□','□','□','□','□','□','□','□',
+       '□','□','□','□','□','□','□','□',
+       '□','□','R','Q','B','N','□','□',]
 
 #==================== FUNCTIONS ====================#
+
+
 #Pre: move is a string that contains a move in coordinate format
 #Post: The move is output to the mode configured
 def output_move(move):
-    try:
-        stockfish.make_moves_from_current_position([move])
-        print(stockfish.get_board_visual().replace("K"," ").replace("k"," ")+"\n\n")
-    except:
-        report_serial_error("Make move")
+    temp = board[chess.parse_square(move[:2])]
+    board[chess.parse_square(move[:2])] = '□'
+    board[chess.parse_square(move[2:])] = temp
+
+    for i in range(64):
+        print(board[i], end='')
+        if i%8 == 7:
+            print()
+
 
 
 #Pre: desc contains a string describing the error
@@ -61,8 +71,8 @@ def report_serial_error(desc = ""):
 #Post: waits until there is a message and returns it
 def read_block_serial():
     while ser.in_waiting == 0: pass
-    serialString = ser.readline()
-    ser.reset_input_buffer()
+    serialString = ser.read()
+    # ser.reset_input_buffer()
     try:
         serialString = serialString.decode("Ascii")
         if verbose: print(bcolors.FAIL + "[VERBOSE] Executed block read with output " + serialString + bcolors.ENDC)
@@ -74,22 +84,26 @@ def read_block_serial():
 #Pre: serial communication is in a unkown state
 #Post: waits until there is a message and returns it
 def read_move_block_serial():
-    serialString = ser.read_until('\n')
-    ser.reset_input_buffer()
-    try:
-        serialString = serialString.decode("Ascii")
-        if verbose: print(bcolors.FAIL + "[VERBOSE] Executed block read move with output " + serialString + bcolors.ENDC)
-        return serialString
-    except:
-        if verbose: print(bcolors.FAIL + "[VERBOSE] Executed block read move with bad output " + bcolors.ENDC)
-        ser.reset_input_buffer()
-        return ""
+    while (1):
+        if ser.in_waiting > 4:
+            serialString = ser.read(4)
+            ser.reset_input_buffer()
+            try:
+                serialString = serialString.decode("Ascii")
+
+                if verbose: print(bcolors.FAIL + "[VERBOSE] Executed block read move with output " + serialString + bcolors.ENDC)
+                return serialString
+            except:
+                if verbose: print(bcolors.FAIL + "[VERBOSE] Executed block read move with bad output " + bcolors.ENDC)
+                ser.reset_input_buffer()
+                return ""
 
 
 #==================== MAIN ====================#
-stockfish.set_fen_position("8/8/k7/8/8/8/6K1/2RQBN2 w - - 0 1")
-print(stockfish.get_board_visual().replace("K"," ").replace("k"," ")+"\n\n")
-
+for i in range(64):
+    print(board[i], end='')
+    if i%8 == 7:
+        print()
 while (1):
     validResponse = False
     while(not validResponse):
@@ -118,16 +132,9 @@ while (1):
     
     print("I'm ready, you can start :)")
     while(1):
-        print("Waiting move...", end='\r')
         move = read_move_block_serial()
         print("Move recieved: " + bcolors.OKBLUE + move + bcolors.ENDC)
-        output_move()
-        if(move==0):
-            stockfish.make_moves_from_current_position(["a6a7"])
-            move=1
-        else:
-            stockfish.make_moves_from_current_position(["a7a6"])
-            move=0
+        output_move(move)
     
     print("Bye :)")
     ser.close()             # close port

@@ -9,22 +9,22 @@
 extern unsigned char actual_position[144]; //Representation of the actual board
 extern unsigned char detected_position[144]; //Buffer representation of the board with a new move
 extern unsigned char middle_position[144]; //Representation of the "middle detected" board
+extern unsigned char possibleMoves[144];
 
 extern unsigned char white_attacks[144]; //Possible attacks white can make
 extern unsigned char black_attacks[144]; //Possible attacks black can make
 
 extern unsigned char turn;
-
+extern char output[20];
 
 void prepareGame();
-void updateAttackMap(int c);
 
-void translateSquare(int pos, char* output);
-void translateMove(unsigned char* new, unsigned char* middle, char* output);
+void translateSquare(int pos, int pos2);
+void translateMove();
 
-unsigned char compareBoards(unsigned char* a, unsigned char* b);
+unsigned char compareBoards();
 void copyBoards(unsigned char* from, unsigned char* to);
 
-int makeMove(unsigned char* new, unsigned char* middle);
+int makeMove();
 	
 #endif /* BOARDSHOWCASE_H_ */
